@@ -13,7 +13,7 @@ testers:
   - "Mox"
   - "OminousOsie"
 vpxVPSId: "Vk2jsNn2NU"
-vpxChecksum: "2ff5a8f4df4a671b0c62f9017788439d"
-tableNotes: "Download version 2.0"
+vpxChecksum: "c8a35d07d6b0a1299ea6c7f73fe7af4c"
+tableNotes: "Download version 3.1"
 applyFixes:
   - "bass"

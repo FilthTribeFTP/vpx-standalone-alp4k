@@ -33,9 +33,11 @@ see README) and `editors_picks.json` (plain array of table folder names).
 
 ## Repo topology and branch discipline
 
-- **Upstream:** `LegendsUnchained/vpx-standalone-alp4k` — fixes PR there.
-- **Staging:** evilwraith's (Wraith's) repo — full Wizard **table submissions**
-  go there first, before official merge into LegendsUnchained main.
+- **Upstream:** `LegendsUnchained/vpx-standalone-alp4k` — **every** PR (fixes
+  and full Wizard table submissions) targets its `main`. There is no longer a
+  staging repo in between (evilwraith's repo was used for that during beta).
+- PRs are opened from the fork branch via GitHub's compare page:
+  `https://github.com/LegendsUnchained/vpx-standalone-alp4k/compare/main...FilthTribeFTP:vpx-standalone-alp4k:<branch>`
 - **This fork's `main` stays exactly synced with upstream main — zero local
   commits.** All work goes on a new branch per PR. When creating a PR branch,
   base it on **upstream** main (`git fetch` the upstream remote and branch from
@@ -45,7 +47,7 @@ see README) and `editors_picks.json` (plain array of table folder names).
   (e.g. `fix-goldeneye-checksum-3.1`).
 - A branch may hold multiple commits if related or batched the same day(s).
 
-## Wizard table submission conventions (Wraith's preferences)
+## Wizard table submission conventions
 
 - **1–2 tables max per PR** for full Wizard table submissions.
 - New folder under `tables/`, named `vpx-<tablename>` — lowercase, no

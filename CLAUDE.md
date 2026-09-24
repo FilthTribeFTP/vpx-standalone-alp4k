@@ -14,6 +14,14 @@ docs, and images. The LU Table Manager does not read YAML from the repo
 directly — it consumes a build artifact attached to GitHub Releases, built by
 GitHub Actions.
 
+VPXS is now public and stable. Release tracks: stable (public), beta testers,
+and wizards (Brandon's track, above beta). Upstream cuts prereleases with
+"Create Testing Release" and promotes them with "Promote Testing Release".
+
+Repo layout: table folders live in `tables/vpx-<name>/` (formerly
+`external/`). Root JSON files: `team_favorites.json` (Team Favorites page,
+see README) and `editors_picks.json` (plain array of table folder names).
+
 ## HARD RULES
 
 - **Never commit table binaries, ROMs, or any DRM-protected file.** `.vpx`
@@ -40,13 +48,16 @@ GitHub Actions.
 ## Wizard table submission conventions (Wraith's preferences)
 
 - **1–2 tables max per PR** for full Wizard table submissions.
-- New folder under `external/`, named `vpx-<tablename>` — lowercase, no
+- New folder under `tables/`, named `vpx-<tablename>` — lowercase, no
   brackets (e.g. `vpx-tz` for Twilight Zone).
 - Files in the table folder, named exactly:
   - `README.md` (follow `table-template_README.md` in the repo root)
   - `table.yml`
-  - `launcher.png` (500x750)
+  - `launcher.png` (640x960)
   - Optionally, if applicable: `table.ini`, `table.vbs`, `nvram.nv`
+- Image standards enforced by the hook and CI: every `*.png` must be a real,
+  non-animated PNG; `launcher.png` 640x960, `backglass.png` 1920x1080,
+  `dmd.png` 1920x1200. Check real pixel dimensions before committing.
 - Plus one new file in `images/`: a `.webp` of the table's playfield,
   referenced by path from the table's README so it renders on GitHub.
 - `table.yml` is authored with the YML generator tool at
@@ -59,16 +70,42 @@ GitHub Actions.
   `(Get-FileHash <file> -Algorithm MD5).Hash.ToLower()`.
 - PR bodies: short, factual, reference the originating Discord bug report or
   GitHub issue. No drama, no file requests.
-- `table.yml` changes are validated by CI (`validate-table-yaml.yml`) against
-  VPSDB; run the repo's pre-commit validation locally before pushing when
-  possible. Fix reported errors — never bypass the hook.
 - Data Claude cannot derive and must get from Brandon per table: VPS IDs, MD5
   hashes of the actual files, measured FPS, tester names, and binary assets
   (`launcher.png`, `nvram.nv`, patched `.vbs`, playfield `.webp`).
-- Fork-as-config-source testing (when pointing Table Manager at this fork):
-  enable Actions on the fork → push tag → workflow builds artifact → publish
-  release. Table Manager reads the release artifact via the `configrepo` key
-  in `external/lu-tablemanager/settings.json` on the cabinet drive. An empty
+
+## Pre-commit hook (required before every commit)
+
+The repo's `.pre-commit-config.yaml` runs the same checks CI runs on a PR:
+`table.yml` metadata validation against VPSDB + yamllint, and image standards
+for `*.png`. It only checks **staged** files.
+
+- Hooks live in `.git/`, so every fresh clone/container needs a one-time
+  install (`.venv` is already gitignored):
+  ```sh
+  python3 -m venv .venv
+  .venv/bin/python -m pip install pre-commit
+  .venv/bin/python -m pre_commit install
+  ```
+- Check staged files: `.venv/bin/python -m pre_commit run`. For specific
+  files: `... pre_commit run --files <paths>`.
+- **Never** use `--all-files` (validates 400+ tables against VPSDB).
+- **Never** bypass with `--no-verify`. A failure gets fixed, not skipped.
+- The validator fetches `virtualpinballspreadsheet.github.io`; in Claude cloud
+  sessions that host must be on the environment's network allowlist, or the
+  metadata check fails with a proxy 403 (a network problem, not a YAML one).
+
+## Fork releases (testing this fork on the cabinet)
+
+- Use the **Create Fork Release** workflow (Actions tab →
+  Create Fork Release → Run workflow). Leave the tag blank to auto-bump the
+  patch version (first release is `v1.0.0`). It refuses to run on upstream.
+- It builds the release assets and publishes a normal, non-prerelease
+  release marked latest: Table Manager reads a non-upstream config repo via
+  `/releases/latest`, which ignores prereleases and drafts.
+- Actions must be enabled on the fork first (forks have them off by default).
+- Table Manager is pointed at the fork via the `configrepo` key in
+  `external/lu-tablemanager/settings.json` on the cabinet drive. An empty
   Wizard means the release has no build artifact.
 
 ## Config hierarchy (VPXS on ALP4K)

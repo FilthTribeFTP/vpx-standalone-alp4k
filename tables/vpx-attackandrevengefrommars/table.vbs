@@ -27,7 +27,7 @@ Else
 End If
 
 ' Use Modulated Flashers
-Const UseVPMModSol = False
+Const UseVPMModSol = True
 
 LoadVPM "01560000", "WPC.VBS", 3.26
 

@@ -53,15 +53,21 @@ see README) and `editors_picks.json` (plain array of table folder names).
 - New folder under `tables/`, named `vpx-<tablename>` — lowercase, no
   brackets (e.g. `vpx-tz` for Twilight Zone).
 - Files in the table folder, named exactly:
-  - `README.md` (follow `table-template_README.md` in the repo root)
+  - `README.md` — for Wizard tables this is now just a two-line pointer to
+    the Table Manager catalog (copy `tables/vpx-hpgof/README.md`, swap the
+    folder name). The long `table-template_README.md` format and the
+    `images/` playfield preview are obsolete for Wizard tables.
   - `table.yml`
   - `launcher.png` (640x960)
   - Optionally, if applicable: `table.ini`, `table.vbs`, `nvram.nv`
 - Image standards enforced by the hook and CI: every `*.png` must be a real,
   non-animated PNG; `launcher.png` 640x960, `backglass.png` 1920x1080,
   `dmd.png` 1920x1200. Check real pixel dimensions before committing.
-- Plus one new file in `images/`: a `.webp` of the table's playfield,
-  referenced by path from the table's README so it renders on GitHub.
+- Converting an existing manual-install table to Wizard: replace the whole
+  folder (old README becomes the catalog pointer; drop files the new set
+  doesn't include).
+- Keep `table.vbs` line endings matching the previous file / repo majority
+  (LF) so the PR diff shows only real script changes.
 - `table.yml` is authored with the YML generator tool at
   https://wizardyml.legendsunchained.com/ (by Mox / moxassault); the full
   field reference is `table.yml.example` and `doc/advanced/wizardtable.adoc`.
@@ -74,7 +80,10 @@ see README) and `editors_picks.json` (plain array of table folder names).
   GitHub issue. No drama, no file requests.
 - Data Claude cannot derive and must get from Brandon per table: VPS IDs, MD5
   hashes of the actual files, measured FPS, tester names, and binary assets
-  (`launcher.png`, `nvram.nv`, patched `.vbs`, playfield `.webp`).
+  (`launcher.png`, `nvram.nv`, patched `.vbs`).
+- Binary files must reach Claude **zipped**: the chat app re-encodes any
+  attached image to a lossy WebP. Brandon zips the PNG (or the whole table
+  folder) and attaches the `.zip`; text files (yml/ini/vbs) attach fine as-is.
 
 ## Pre-commit hook (required before every commit)
 
@@ -99,8 +108,19 @@ for `*.png`. It only checks **staged** files.
 
 ## Fork releases (testing this fork on the cabinet)
 
+Branch model (same as pinballwizard2023's fork):
+- One branch per table, created from `upstream/main`, named
+  `add-vpx-<tablename>` — this is the branch the PR is opened from.
+- `Testing-Main` = `upstream/main` + a `--no-ff` merge of every table branch
+  under test. Releases are cut **from `Testing-Main`**, so every table in
+  testing ships together. Never PR from `Testing-Main`.
+- Changes are made on the table branch first, then merged into
+  `Testing-Main` again. To pick up upstream, merge `upstream/main` into
+  `Testing-Main` (merge, never rebase). After a table's PR is merged
+  upstream, its branch is done; the next upstream merge absorbs it.
+
 - Use the **Create Fork Release** workflow (Actions tab →
-  Create Fork Release → Run workflow). Leave the tag blank to auto-bump the
+  Create Fork Release → Run workflow, "Use workflow from" = `Testing-Main`). Leave the tag blank to auto-bump the
   patch version (first release is `v1.0.0`). It refuses to run on upstream.
 - It builds the release assets and publishes a normal, non-prerelease
   release marked latest: Table Manager reads a non-upstream config repo via

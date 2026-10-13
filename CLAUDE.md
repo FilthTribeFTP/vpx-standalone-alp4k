@@ -78,6 +78,13 @@ see README) and `editors_picks.json` (plain array of table folder names).
   `(Get-FileHash <file> -Algorithm MD5).Hash.ToLower()`.
 - PR bodies: short, factual, reference the originating Discord bug report or
   GitHub issue. No drama, no file requests.
+- Claude cannot open, read or watch PRs on LegendsUnchained from a session
+  attached to this fork (same repo name, different owner). Hand Brandon the
+  compare link plus title/body; PR heads can still be checked anonymously with
+  `git fetch upstream +refs/pull/<n>/head:refs/pr/<n>`.
+- Upstream's `image-optimize` workflow runs optipng on PR PNGs and **pushes a
+  commit to the PR branch** (needs "Allow edits by maintainers"). Always
+  fetch the branch before pushing more changes to an open PR.
 - Data Claude cannot derive and must get from Brandon per table: VPS IDs, MD5
   hashes of the actual files, measured FPS, tester names, and binary assets
   (`launcher.png`, `nvram.nv`, patched `.vbs`).

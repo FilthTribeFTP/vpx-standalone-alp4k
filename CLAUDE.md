@@ -68,6 +68,10 @@ see README) and `editors_picks.json` (plain array of table folder names).
   doesn't include).
 - Keep `table.vbs` line endings matching the previous file / repo majority
   (LF) so the PR diff shows only real script changes.
+- Table Manager **merges** a custom `table.vbs` into the installed `.vpx`'s own
+  script (per Brandon; the repo docs still say "instead of"). So a custom
+  vbs written against an older table version is not a problem when the
+  author releases a new `.vpx` — only the yml checksum/notes need updating.
 - `table.yml` is authored with the YML generator tool at
   https://wizardyml.legendsunchained.com/ (by Mox / moxassault); the full
   field reference is `table.yml.example` and `doc/advanced/wizardtable.adoc`.
